@@ -3,9 +3,10 @@ var stack = require('stack');
 var mount = require('../../');
 var config = require('./fontello-config');
 var fs = require('fs');
-var fontello = mount(config, start);
 
-function start() {
+mount(config, start);
+
+function start(err, fontello) {
   var server = http.createServer(stack(
     log,
     fontello,
