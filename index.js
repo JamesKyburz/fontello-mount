@@ -29,8 +29,12 @@ function mount(config, cb) {
   function router(q, r, next) {
     var key = q.url.split('?')[0];
     var file = files[key];
-    if (!file) return next();
+    if (!file) {
+      if (typeof next === 'function') return next();
+      return;
+    }
     r.setHeader('content-type', types[key]);
     r.end(file);
+    return true;
   }
 }
