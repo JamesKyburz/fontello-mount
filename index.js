@@ -3,11 +3,12 @@ var mime = require('mime');
 module.exports = mount;
 
 function mount(config, cb) {
+  cb = cb || function() {};
   var files = {};
   var types = {};
-  cb = cb || function() {};
+  router.files = files;
+  router.types = types;
   download(config, createRouter);
-  return router;
   function createRouter(err, zip) {
     if (err) return cb(err);
     buildCache(zip);

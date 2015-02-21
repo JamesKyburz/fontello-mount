@@ -5,17 +5,20 @@ mount fontello assets in a http route without files
 # example
 
 ``` js
-var mount = require('fontello-mount')
-var stack = require('stack');
+var http = require('http');
+var mount = require('fontello-mount');
 var config = require('./fontello-config');
-var fontello = mount(config, start);
 
-function start() {
-  var server = http.createServer(stack(
-    fontello,
-    index,
-    notFound
-  ));
+mount(config, start);
+
+function start(err, fontello) {
+  var server = http.createServer();
+  server.on('request', function(q, r) {
+    log(q, r);
+    if (index(q, r)) return;
+    if (fontello(q, r)) return;
+    notFound(q, r);
+  });
   server.listen(1600, console.log.bind(console, 'running http://localhost:1600'));
 }
 ```
