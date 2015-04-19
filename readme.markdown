@@ -28,7 +28,9 @@ function start(err, fontello) {
 ## mount(config, cb)
 
 `config` json or string (fontello config.json contents)
-`cb` ```function(err, router)```
+`cb` ```function(err, router, cache)```
+
+`cache` contains files and types of fontello assets
 
 # install
 

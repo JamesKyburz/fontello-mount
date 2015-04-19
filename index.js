@@ -1,21 +1,19 @@
 var download = require('fontello-download');
 var mime = require('mime');
+
 module.exports = mount;
+mount.router = router;
 
 function mount(config, cb) {
-  cb = cb || function() {};
-  var files = {};
-  var types = {};
-  router.files = files;
-  router.types = types;
-  download(config, createRouter);
-  function createRouter(err, zip) {
+  download(config, buildCache);
+
+  function buildCache(err, zip, contents) {
     if (err) return cb(err);
-    buildCache(zip);
-  }
-  function buildCache(zip) {
+    var files = {};
+    var types = {};
     Object.keys(zip.files).forEach(add);
-    cb(null, router);
+    var cache = {files: files, types: types};
+    cb(null, router(cache), cache);
     function add(key) {
       if (-1 === key.indexOf('.')) return;
       var name = '/' + key.replace(/(fontello)-[^/]*/, '$1');
@@ -27,15 +25,22 @@ function mount(config, cb) {
       console.log('caching %s with mime %s', name, contentType);
     }
   }
-  function router(q, r, next) {
+}
+
+function router(cache) {
+  return function router(q, r, next) {
     var key = q.url.split('?')[0];
-    var file = files[key];
+    var file = cache.files[key];
     if (!file) {
       if (typeof next === 'function') return next();
       return;
     }
-    r.setHeader('content-type', types[key]);
-    r.end(file);
+    r.setHeader('content-type', cache.types[key]);
+    r.end(new Buffer(file));
     return true;
   }
+}
+
+function cache(files, types) {
+  return {files: files, types: types};
 }
