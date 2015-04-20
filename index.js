@@ -1,11 +1,33 @@
 var download = require('fontello-download');
 var mime = require('mime');
+var cacheStore = require('./cache-store');
 
 module.exports = mount;
 mount.router = router;
 
-function mount(config, cb) {
-  download(config, buildCache);
+function mount(config, opt, cb) {
+  opt = opt || {};
+  if (typeof opt === 'function') {
+    cb = opt;
+    opt = {};
+  }
+
+  var store;
+  if (opt.cachePath || opt.cache) {
+    store = opt.cache || cacheStore(config, opt.cachePath);
+    store.get(load);
+  } else {
+    load(null);
+  }
+
+  function load(err, cached) {
+    if (err) console.log(err);
+    if (cached) {
+      cb(null, router(cached));
+    } else {
+      download(config, buildCache);
+    }
+  }
 
   function buildCache(err, zip, contents) {
     if (err) return cb(err);
@@ -13,6 +35,9 @@ function mount(config, cb) {
     var types = {};
     Object.keys(zip.files).forEach(add);
     var cache = {files: files, types: types};
+    if (store) store.put(cache, function(err) {
+      if (err) console.log('failed to cache fontello fonts', err);
+    });
     cb(null, router(cache), cache);
     function add(key) {
       if (-1 === key.indexOf('.')) return;

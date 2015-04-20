@@ -25,12 +25,18 @@ function start(err, fontello) {
 
 # methods
 
-## mount(config, cb)
+## mount(config, [opt], cb)
 
 `config` json or string (fontello config.json contents)
-`cb` ```function(err, router, cache)```
 
-`cache` contains files and types of fontello assets
+`opt` optional options `cachePath` or `cache` for custom cache
+
+if `opt.cachePath` is specified cache to disk will be attempted using a
+hash of the fontello config as key
+
+`cb` ```function(err, router, assets)```
+
+`assets` contains files and types from fontello assets
 
 # install
 
