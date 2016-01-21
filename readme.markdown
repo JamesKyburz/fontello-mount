@@ -2,24 +2,26 @@
 
 mount fontello assets in a http route without files
 
+[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+
 # example
 
 ``` js
-var http = require('http');
-var mount = require('fontello-mount');
-var config = require('./fontello-config');
+var http = require('http')
+var mount = require('fontello-mount')
+var config = require('./fontello-config')
 
-mount(config, start);
+mount(config, start)
 
-function start(err, fontello) {
-  var server = http.createServer();
-  server.on('request', function(q, r) {
-    log(q, r);
-    if (index(q, r)) return;
-    if (fontello(q, r)) return;
-    notFound(q, r);
-  });
-  server.listen(1600, console.log.bind(console, 'running http://localhost:1600'));
+function start (err, fontello) {
+  var server = http.createServer()
+  server.on('request', function (q, r) 
+    log(q, r)
+    if (index(q, r)) return
+    if (fontello(q, r)) return
+    notFound(q, r)
+  })
+  server.listen(1600, console.log.bind(console, 'running http://localhost:1600'))
 }
 ```
 
