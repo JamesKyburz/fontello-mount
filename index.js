@@ -1,6 +1,8 @@
 var download = require('fontello-download')
 var mime = require('mime')
 var cacheStore = require('./cache-store')
+var once = require('once')
+var debug = require('debug')('fontello-mount')
 
 module.exports = mount
 mount.router = router
@@ -12,6 +14,8 @@ function mount (config, opt, cb) {
     opt = {}
   }
 
+  cb = once(cb)
+
   var store
   if (opt.cachePath || opt.cache) {
     store = opt.cache || cacheStore(config, opt.cachePath)
@@ -21,7 +25,7 @@ function mount (config, opt, cb) {
   }
 
   function load (err, cached) {
-    if (err) console.log(err)
+    if (err) debug(err)
     if (cached) {
       cb(null, router(cached))
     } else {
@@ -36,22 +40,23 @@ function mount (config, opt, cb) {
     Object.keys(zip.files).forEach(add)
     var cache = {files: files, types: types}
     var pending = files.length
-    var lastError
     if (store) {
       store.put(cache, function (err) {
-        if (lastError) return
         if (err) {
-          console.log('failed to cache fontello fonts', err)
-          cb(err)
-          lastError = err
-          return
+          debug('failed to cache fontello fonts', err)
+          return cb(err)
         }
         pending--
-        if (!pending) cb(null, router(cache), cache)
+        if (!pending) done()
       })
     } else {
+      done()
+    }
+
+    function done () {
       cb(null, router(cache), cache)
     }
+
     function add (key) {
       if (key.indexOf('.') === -1) return
       var name = '/' + key.replace(/(fontello)-[^/]*/, '$1')
@@ -60,7 +65,7 @@ function mount (config, opt, cb) {
       var charset = mime.charsets.lookup(contentType)
       if (charset) contentType += '; charset=' + charset
       types[name] = contentType
-      console.log('caching %s with mime %s', name, contentType)
+      debug('caching %s with mime %s', name, contentType)
     }
   }
 }
