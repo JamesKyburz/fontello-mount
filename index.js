@@ -24,10 +24,10 @@ function mount (config, opt, cb) {
     load(null)
   }
 
-  function load (err, cached) {
+  function load (err, cache) {
     if (err) debug(err)
-    if (cached) {
-      cb(null, router(cached))
+    if (cache) {
+      cb(null, router(cache), cache)
     } else {
       download(config, buildCache)
     }
