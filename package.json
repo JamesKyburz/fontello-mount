@@ -21,7 +21,7 @@
     "fontello-download": "1.0.11",
     "json-stable-stringify": "1.0.1",
     "mime": "1.3.4",
-    "once": "1.3.3"
+    "once": "1.4.0"
   },
   "license": "MIT",
   "devDependencies": {
