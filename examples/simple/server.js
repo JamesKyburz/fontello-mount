@@ -2,6 +2,7 @@ var http = require('http')
 var mount = require('../../')
 var config = require('./fontello-config')
 var fs = require('fs')
+var path = require('path')
 
 mount(config, start)
 
@@ -48,7 +49,7 @@ function log (q, r) {
 function index (q, r) {
   if (q.url === '/') {
     r.setHeader('content-type', 'text/html')
-    fs.createReadStream(__dirname + '/index.html').pipe(r)
+    fs.createReadStream(path.join(__dirname, '/index.html')).pipe(r)
     return true
   }
   return false
